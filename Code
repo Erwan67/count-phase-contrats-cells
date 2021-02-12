@@ -1,0 +1,34 @@
+
+//Init
+run("Fresh Start");
+
+//Dialog Box to select the Folder
+Dialog.create("Petri Dish Measurement");
+Dialog.addDirectory("Dir:", getDir("downloads")+"images/");
+Dialog.addDirectory("Save Folder:", getDir("downloads")+"images/");
+
+Dialog.show();
+folderimage = Dialog.getString();
+savefolder= Dialog.getString();
+
+
+//open, correct and analyse the datas
+filelist = getFileList(folderimage); 
+for (f = 0; f < lengthOf(filelist); f++) {
+        open(folderimage + filelist[f]);
+        name=getTitle();
+        run("Bandpass Filter...", "filter_large=40 filter_small=3 suppress=None tolerance=5");
+        run("Find Maxima...", "prominence=8 light output=[Point Selection]");
+        roiManager("Add");
+		run("Measure");
+		n=nResults;
+		print(name+":"+ n);
+		run("Clear Results");
+		roiManager("delete");
+		selectWindow(name);
+		saveAs("Tiff", savefolder+name);
+		close();
+		
+}
+selectWindow("Log");
+saveAs("txt",savefolder);
